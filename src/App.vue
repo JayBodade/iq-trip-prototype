@@ -1,28 +1,51 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <l-map style="height: 450px" :zoom="zoom" :center="currentPosition">
+      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <l-marker :lat-lng="currentPosition">
+        <l-popup>
+          <div>Votre position actuelle</div>
+        </l-popup>
+      </l-marker>
+    </l-map>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import * as L from "leaflet";
+
+import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "app",
+  components: { LMap, LTileLayer, LMarker, LPopup },
+  data: function () {
+    return {
+      zoom: 17,
+      currentPosition: [21.14631, 79.08491],
+      url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    };
+  },
+  mounted() {
+    this.askPermissionForCurrentPosition();
+  },
+  methods: {
+    askPermissionForCurrentPosition() {
+      const vm = this;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          vm.currentPosition = L.latLng(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+      return vm.currentPosition;
+    },
+  },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

@@ -1,4 +1,4 @@
-# iq-trip-prototype
+# simple_leaflet_implementation
 
 ## Project setup
 ```
